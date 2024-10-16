@@ -1,0 +1,352 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QWidget" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1070</width>
+    <height>900</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Archimedes ROM Management</string>
+  </property>
+  <widget class="QTabWidget" name="tcTabs">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1070</width>
+     <height>780</height>
+    </rect>
+   </property>
+   <property name="tabShape">
+    <enum>QTabWidget::Rounded</enum>
+   </property>
+   <property name="currentIndex">
+    <number>2</number>
+   </property>
+   <widget class="QWidget" name="tabGamelists">
+    <attribute name="title">
+     <string>Gamelists</string>
+    </attribute>
+    <widget class="QListWidget" name="lwGamelists">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>10</y>
+       <width>221</width>
+       <height>681</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QListWidget" name="lwGames">
+     <property name="geometry">
+      <rect>
+       <x>240</x>
+       <y>10</y>
+       <width>371</width>
+       <height>681</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_9">
+     <property name="geometry">
+      <rect>
+       <x>621</x>
+       <y>281</y>
+       <width>85</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Description:</string>
+     </property>
+    </widget>
+    <widget class="QPlainTextEdit" name="txtDesc">
+     <property name="geometry">
+      <rect>
+       <x>720</x>
+       <y>280</y>
+       <width>341</width>
+       <height>411</height>
+      </rect>
+     </property>
+     <property name="acceptDrops">
+      <bool>true</bool>
+     </property>
+     <property name="readOnly">
+      <bool>false</bool>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btnGamelists">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>700</y>
+       <width>131</width>
+       <height>29</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Load Gamelists</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btnAddGame">
+     <property name="geometry">
+      <rect>
+       <x>840</x>
+       <y>700</y>
+       <width>111</width>
+       <height>29</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Add Game</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btnSaveChanges">
+     <property name="geometry">
+      <rect>
+       <x>720</x>
+       <y>700</y>
+       <width>121</width>
+       <height>29</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Save Changes</string>
+     </property>
+    </widget>
+    <widget class="QWidget" name="layoutWidget">
+     <property name="geometry">
+      <rect>
+       <x>619</x>
+       <y>11</y>
+       <width>441</width>
+       <height>268</height>
+      </rect>
+     </property>
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_10">
+        <property name="text">
+         <string>Name:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1" colspan="2">
+       <widget class="QLineEdit" name="txtName"/>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>Path:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="2">
+       <widget class="QLineEdit" name="txtPath"/>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="label_3">
+        <property name="text">
+         <string>Rating:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="2">
+       <widget class="QLineEdit" name="txtRating"/>
+      </item>
+      <item row="3" column="0" colspan="2">
+       <widget class="QLabel" name="label_4">
+        <property name="text">
+         <string>Release Date:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="2">
+       <widget class="QLineEdit" name="txtReleaseDate"/>
+      </item>
+      <item row="4" column="0" colspan="2">
+       <widget class="QLabel" name="label_5">
+        <property name="text">
+         <string>Developer:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="2">
+       <widget class="QLineEdit" name="txtDeveloper"/>
+      </item>
+      <item row="5" column="0" colspan="2">
+       <widget class="QLabel" name="label_6">
+        <property name="text">
+         <string>Publisher:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="2">
+       <widget class="QLineEdit" name="txtPublisher"/>
+      </item>
+      <item row="6" column="0">
+       <widget class="QLabel" name="label_7">
+        <property name="text">
+         <string>Genre:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="2">
+       <widget class="QLineEdit" name="txtGenre"/>
+      </item>
+      <item row="7" column="0" colspan="2">
+       <widget class="QLabel" name="label_8">
+        <property name="text">
+         <string>Players:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="2">
+       <widget class="QLineEdit" name="txtPlayers"/>
+      </item>
+     </layout>
+    </widget>
+    <widget class="QPushButton" name="btnDeleteGamelistEntry">
+     <property name="geometry">
+      <rect>
+       <x>950</x>
+       <y>700</y>
+       <width>111</width>
+       <height>29</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Delete Entry</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="tabRoms">
+    <attribute name="title">
+     <string>Rom Manager</string>
+    </attribute>
+    <widget class="QPushButton" name="btnLoadRomDir">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>10</y>
+       <width>131</width>
+       <height>29</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>&amp;Load Directory</string>
+     </property>
+    </widget>
+    <widget class="QListWidget" name="lstRoms">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>50</y>
+       <width>361</width>
+       <height>691</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QGroupBox" name="grpRadioBtns">
+     <property name="geometry">
+      <rect>
+       <x>380</x>
+       <y>10</y>
+       <width>121</width>
+       <height>731</height>
+      </rect>
+     </property>
+     <property name="layoutDirection">
+      <enum>Qt::LeftToRight</enum>
+     </property>
+     <property name="title">
+      <string>Filters:</string>
+     </property>
+    </widget>
+    <widget class="QListWidget" name="lstFilteredRoms">
+     <property name="geometry">
+      <rect>
+       <x>680</x>
+       <y>50</y>
+       <width>381</width>
+       <height>691</height>
+      </rect>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="tabMedia">
+    <attribute name="title">
+     <string>Media</string>
+    </attribute>
+    <widget class="QLabel" name="lblImage">
+     <property name="geometry">
+      <rect>
+       <x>420</x>
+       <y>10</y>
+       <width>640</width>
+       <height>480</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>lblImage</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btnLoadMedia">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>10</y>
+       <width>151</width>
+       <height>61</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Load Game System
+ Media Folder</string>
+     </property>
+    </widget>
+    <widget class="QWidget" name="mediaContainer" native="true">
+     <property name="geometry">
+      <rect>
+       <x>70</x>
+       <y>450</y>
+       <width>261</width>
+       <height>221</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QListWidget" name="lvMedia">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>80</y>
+       <width>256</width>
+       <height>501</height>
+      </rect>
+     </property>
+    </widget>
+   </widget>
+  </widget>
+  <widget class="QPushButton" name="btnTemp">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>810</y>
+     <width>91</width>
+     <height>29</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>PushButton</string>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
