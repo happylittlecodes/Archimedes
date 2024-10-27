@@ -2,7 +2,8 @@ import os, sys, configparser
 import xml.etree.ElementTree as ET
 from ui_form import Ui_MainWindow # generated UI class
 from pathlib import Path
-from PyQt5.QtWidgets import QApplication, QMessageBox, QMainWindow, QLabel, QTextEdit, QTreeView, QFileSystemModel, QFileDialog, QFileSystemModel, QRadioButton, QVBoxLayout, QListWidgetItem
+from PyQt5.QtWidgets import QApplication, QMessageBox, QMainWindow, QLabel, QTextEdit, QTreeView, QFileSystemModel
+from PyQt5.QtWidgets import QFileDialog, QFileSystemModel, QRadioButton, QGridLayout, QVBoxLayout, QListWidgetItem
 from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent
 from PyQt5.QtGui import QStandardItem, QStandardItemModel
 from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent
@@ -11,7 +12,7 @@ from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import Qt, QUrl, pyqtSlot, QThread
 import pickle
 
-from Utils import Utils, FileSystemModel, SettingsManager, Thumbnail, Game
+from Utils import Utils, FileSystemModel, SettingsManager, Thumbnail, Game, QListWidgetGame
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -28,16 +29,16 @@ class MainWindow(QMainWindow):
         # Instance vars
         self.videoWidget = QVideoWidget(self.ui.tabGames)
         self.mediaPlayer = QMediaPlayer(None, QMediaPlayer.VideoSurface)
-        programFolder = os.path.dirname(os.path.abspath(__file__))
-        self.configPath = os.path.join(programFolder, 'config.ini')
+        self.programFolder = os.path.dirname(os.path.abspath(__file__))
+        self.configPath = os.path.join(self.programFolder, 'config.ini')
         self.conMan = SettingsManager(self.configPath)
-        self.imageExtensions = ['.png','.jpg']
-        self.videoExtensions = ['.mp4']
+        self.imageExtensions = self.conMan.get('misc','imageextensions').split(',')
+        self.videoExtensions = self.conMan.get('misc','videoextensions').split(',')
         self.gamelists = {}
         self.mediaDic = {}
         self.xmlRoot = None
         self.romList = None
-        self.currentGame = None
+        self.currentGame = Game()
         self.currentSystem = None
         self.currentXmlPath = None
         self.model = None
@@ -46,59 +47,71 @@ class MainWindow(QMainWindow):
         self.worker = None
 
         # Connect controls to event handlers
-        self.ui.btnLoadRomDir.clicked.connect(self.on_btnLoadRomDir_click)
-        self.ui.btnLoadMedia.clicked.connect(self.on_btnLoadMedia_click)
         self.ui.btnGamelists.clicked.connect(self.on_btnGamelists_click)
         self.ui.btnAddGame.clicked.connect(self.on_btnAddGame_click)
         self.ui.btnSaveChanges.clicked.connect(self.on_btnSaveChanges_click)
         self.ui.btnDeleteGamelistEntry.clicked.connect(self.on_btnDeleteGamelistEntry_click)
-        #self.ui.lvMedia.itemClicked.connect(self.on_lvMedia_item_click)
         self.ui.lwGames.itemClicked.connect(self.on_lwGames_item_clicked)
         self.ui.tcTabs.currentChanged.connect(self.onTabChanged)
         self.ui.cmbSystems.activated.connect(self.on_cmbSystems_activated)
+        self.ui.btnRemoveAllTags.clicked.connect(self.on_btnRemoveAllTags_click)
+        self.ui.btnDeleteRoms.clicked.connect(self.on_btnDeleteRoms_click)
+        self.ui.chkAll.stateChanged.connect(self.on_chkAll_Checked)
+        self.ui.btnSerialize.clicked.connect(self.on_btnSerialize_click)
+        self.ui.btnDeserialize.clicked.connect(self.on_btnDeserialize_click)
 
         # Startup operations
+        self.ui.tcTabs.setCurrentIndex(0)
         self.mediaPlayer.setVideoOutput(self.videoWidget)
-        self.videoWidget.setGeometry(209, 300, 650, 430)
-        self.ui.grpMedia.setLayout(QVBoxLayout())
+        self.videoWidget.setGeometry(20, 310, 670, 370)
+        self.ui.grpMedia.setLayout(QGridLayout())
         self.videoWidget.hide()
         self.ui.lblImage.hide()
-        #self.loadGamelists(self.conMan.get('folders','gamelistsFolder'), self.conMan.get('misc','gamelistsMask'))
         self.ui.lblImage.setText('')
         self.ui.grpMedia.setTitle('')
+        self.ui.lblMedia.setText('')
+        self.ui.lblMarquee.setText('')
+        #self.loadGamelists(self.conMan.get('folders','gamelistsFolder'), self.conMan.get('misc','gamelistsMask'))
 
         self.setupForm()
 
-    # this probably won't be needed/desired in the future
-    def onTabChanged(self, index):
-        if index == 2:  # Tab 3 is at index 2
-            self.resize(1100, 900)  # Set larger size for window
-            self.ui.tcTabs.setFixedSize(1098, 800)  # Set larger size for tab container
-        else:
-            self.resize(1070, 900)  # Revert to original size for window
-            self.ui.tcTabs.setFixedSize(1070, 780)  # Revert to original size for tab container
 
-###############################################
-#################v NEW MODEL v#################
+    def on_btnSerialize_click(self):
+        Utils.serializeGames(self.games)
+
+    def on_btnDeserialize_click(self):
+        self.games = Utils.deserializeGames()
+
+    def onTabChanged(self, index):
+        if index == 0:
+            self.resize(1565, 785)  # window size
+            self.ui.tcTabs.setFixedSize(1190, 761)  # tab container size
+        else:
+            self.resize(1028, 785)  # window size
+            self.ui.tcTabs.setFixedSize(650, 761)  # tab container size
+
     def setupForm(self):
-        # load any folder in the current config.activeRomDirs that actually has roms in it to a ComboBox
-        # populate that config entry (imperfectly) if it's empty
-        if not self.conMan.get('misc', 'activeRomDirs'):
+        # load any folder in the current config.activeRomDirs that actually has roms
+        # in it to a ComboBox populate that config entry (imperfectly) if it's empty
+        if not self.conMan.get('misc', 'activeromdirs'):
             self.loadRomsDirectories()
 
-        for dir in self.conMan.get('misc', 'activeRomDirs').split(','):
-            self.ui.cmbSystems.addItem(os.path.basename(dir))
+        for dir in self.conMan.get('misc', 'activeromdirs').split(','):
+            folder = dir.split('/')[0]
+            self.ui.cmbSystems.addItem(folder)
 
     def loadRomsDirectories(self):
         for dir in sorted(Utils.getDirsInDir(self.conMan.get('folders', 'romsFolder'))):
             if not Path(dir).is_symlink():
                 size, count = Utils.getDirectorySizeAndFileCount(dir)
                 if size > 2000: # horrendous active directory detection, fix the fuck outta me
-                    self.conMan.append('misc', 'activeRomDirs', dir)
+                    self.conMan.append('misc', 'activeromdirs', dir.replace(self.conMan.get('misc', 'romsdirectory'), ''))
         self.conMan.save()
 
+####################################################
+###############v METADATA/MEDIA TAB v###############
     def on_cmbSystems_activated(self, index):
-        # load games for the selected system
+        # load games for the selected system into the form-left QListWidget
         self.ui.lwGames.clear()
         self.clearFormMetadata()
         self.currentSystem = self.ui.cmbSystems.currentText()
@@ -111,17 +124,18 @@ class MainWindow(QMainWindow):
             return
 
         for romFile in sorted(romList):
-            name = Path(romFile).stem
-            game = Game(name)
-            game.romPath = romFile
-            game.system = self.currentSystem
-            game.updatePath = self.conMan.get('folders', 'updatefolder')
-            game.mediaFolder = os.path.join(self.conMan.get('folders', 'mediafolder'), game.system)
-            game.gamelistEntry = Utils.findGameByName(self.xmlRoot, game.name)
-            self.loadMedia(game)
-            self.loadUpdatesDLC(game)
-            self.games['|'.join([name, self.currentSystem])] = game
-            self.ui.lwGames.addItem(name)
+                name = Path(romFile).stem
+                game = Game(name)
+                game.romPath = romFile
+                game.system = self.currentSystem
+                game.updatePath = self.conMan.get('folders', 'updatefolder')
+                game.mediaFolder = os.path.join(self.conMan.get('folders', 'mediafolder'), game.system)
+                game.gamelistEntry = Utils.findGameByName(self.xmlRoot, game.name)
+                self.loadMedia(game)
+                self.loadUpdatesDLC(game)
+                self.games['|'.join([name, self.currentSystem])] = game
+                widg = QListWidgetGame(game.name, game = game)
+                self.ui.lwGames.addItem(widg)
 
     def clearFormMetadata(self):
         self.ui.txtName.setText("")
@@ -154,48 +168,45 @@ class MainWindow(QMainWindow):
                     game.dlc.append(filename)
 
     def on_lwGames_item_clicked(self, item):
-        sGame = item.text()
+        gameName = item.text()
         # game|system is the key for local collection of class Games
-        self.currentGame = self.games.get('|'.join([sGame, self.currentSystem]))
+        game = self.games.get('|'.join([gameName, self.currentSystem]))
 
         # deal with media
         self.ui.lblImage.hide()
         self.mediaPlayer.stop()
         self.videoWidget.hide()
-        self.loadThumbnails(self.currentGame)
+        self.loadThumbnails(game)
+        self.setRadioButtons()
 
         # display the metadata or lack thereof
-        if not self.currentGame.gamelistEntry:
+        if not game.gamelistEntry:
             self.clearFormMetadata()
         else:
-            nameElement = self.currentGame.gamelistEntry.find('name')
+            nameElement = game.gamelistEntry.find('name')
             self.ui.txtName.setText(nameElement.text if nameElement is not None else sGame)
 
-            nameElement = self.currentGame.gamelistEntry.find('path')
+            nameElement = game.gamelistEntry.find('path')
             self.ui.txtPath.setText(nameElement.text if nameElement is not None else "")
 
-            nameElement = self.currentGame.gamelistEntry.find('rating')
+            nameElement = game.gamelistEntry.find('rating')
             self.ui.txtRating.setText(nameElement.text if nameElement is not None else "")
 
-            nameElement = self.currentGame.gamelistEntry.find('developer')
+            nameElement = game.gamelistEntry.find('developer')
             self.ui.txtDeveloper.setText(nameElement.text if nameElement is not None else "")
 
-            nameElement = self.currentGame.gamelistEntry.find('publisher')
+            nameElement = game.gamelistEntry.find('publisher')
             self.ui.txtPublisher.setText(nameElement.text if nameElement is not None else "")
 
-            nameElement = self.currentGame.gamelistEntry.find('genre')
+            nameElement = game.gamelistEntry.find('genre')
             self.ui.txtGenre.setText(nameElement.text if nameElement is not None else "")
 
-            nameElement = self.currentGame.gamelistEntry.find('players')
+            nameElement = game.gamelistEntry.find('players')
             self.ui.txtPlayers.setText(nameElement.text if nameElement is not None else "")
 
-            nameElement = self.currentGame.gamelistEntry.find('desc')
+            nameElement = game.gamelistEntry.find('desc')
             self.ui.txtDesc.setPlainText(nameElement.text if nameElement is not None else "")
-###############################################
-#################^ NEW MODEL ^#################
 
-###############################################
-###############v GAMELISTS TAB v###############
     def on_btnSaveChanges_click(self):
         updatedValues = self.getGameProperties()
         self.updateCurrentGame(updatedValues)
@@ -211,8 +222,10 @@ class MainWindow(QMainWindow):
         self.xmlRoot.append(self.currentGame)
         Utils.saveXMLToFile(self.currentXmlPath, self.xmlRoot)
 
-    def on_btnDeleteGamelistEntry_click(self):
-        self.xmlRoot.remove(self.currentGame)
+    def on_btnDeleteGamelistEntry_click(self, xelement=None):
+        if xelement is None:
+            xelement = self.currentGame
+        self.xmlRoot.remove(xelement)
         Utils.saveXMLToFile(self.currentXmlPath, self.xmlRoot)
 
     def getGameProperties(self):
@@ -258,23 +271,16 @@ class MainWindow(QMainWindow):
         # update gamelists location in config
         folderPath = QFileDialog.getExistingDirectory(self, "Select Gamelists Folder")
         self.conMan.set('folders', 'gamelistsfolder')
-###############^ GAMELISTS TAB ^###############
-###############################################
-
+###############^ METADATA/MEDIA TAB ^###############
+####################################################
 ###############################################
 #################v ROMS TAB v##################
-    def on_btnLoadRomDir_click(self):
-        folderPath = QFileDialog.getExistingDirectory(self, 'Select ROMs Folder', self.conMan.get('folders', 'romsFolder'))
-        self.romList = Utils.getRoms(folderPath)
-        fileNames = [os.path.basename(filePath) for filePath in self.romList]
-        fileNames = sorted(fileNames)
-        self.ui.lstRoms.clear()
-        self.ui.lstRoms.addItems(fileNames)
+    def setRadioButtons(self):
         uniqueOptions = set()
-
         # Iterate over all file names to find values in parentheses
-        for fileName in fileNames:
-            matches = re.findall(r'\((.*?)\)', fileName)
+        for index in range(self.ui.lwGames.count()):
+            item = self.ui.lwGames.item(index)
+            matches = re.findall(r'[\(\[](.*?)[\)\]]', item.text())
             for match in matches:
                 options = match.split(',')
                 uniqueOptions.update(option.strip() for option in options)  # Add stripped options to the set
@@ -289,33 +295,94 @@ class MainWindow(QMainWindow):
             radioBtn.toggled.connect(self.on_RadioButton_Checked)
             self.ui.grpRadioBtns.layout().addWidget(radioBtn)
 
-    def on_RadioButton_Checked(self):
+    def on_RadioButton_Checked(self): #Rework this
         # Get the selected radio button
         selectedButton = self.sender()
         if selectedButton:
-            self.ui.lstFilteredRoms.clear()
+            self.ui.lwFilteredRoms.clear()
             text = selectedButton.text()
-            for index in range(self.ui.lstRoms.count()):
-                item = self.ui.lstRoms.item(index)
+            for index in range(self.ui.lwGames.count()):
+                item = self.ui.lwGames.item(index)
                 if text in item.text():
                     # Add a new checkable item to the filtered list
-                    newItem = QListWidgetItem(item.text())
+                    newItem = QListWidgetGame(item.text(), game = item.getGame())
+                    newItem.setGame
                     newItem.setFlags(newItem.flags() | Qt.ItemIsUserCheckable)
                     newItem.setCheckState(Qt.Unchecked)
-                    self.ui.lstFilteredRoms.addItem(newItem)
+                    self.ui.lwFilteredRoms.addItem(newItem)
+
+    def on_chkAll_Checked(self):
+        for i in range(self.ui.lwFilteredRoms.count()):
+            self.ui.lwFilteredRoms.item(i).setCheckState(self.sender().checkState())
+        if self.sender().checkState():
+            self.sender().setText('Deselect All')
+        else:
+            self.sender().setText('Select All')
+
+    def on_btnRemoveSelectedTag_click(self):
+        tag = self.getSelectedRadioBtn().text
+        for item in self.getSelectedRoms():
+            newName = re.sub(r'\s*[\[\(]' + tag + '?[\]\)]', '', item.text()).strip().replace(' .', '.')
+            self.renameFile(item.getGame(), newName)
+
+    def on_btnRemoveAllTags_click(self):
+        for item in self.getSelectedRoms():
+            newName = re.sub(r'\s*[\[\(].*?[\]\)]', '', item.text()).strip().replace(' .', '.')
+            self.renameFile(item.getGame(), newName)
+
+    def renameFile(self, game, newName):
+        game.name = newName
+        oldPath = item.getGame().romPath
+        newPath = oldPath.replace(item.getGame().name, newName)
+        os.rename(oldPath, newPath)
+        self.ui.lwFilteredRoms.removeItemWidget(item)
+
+    def on_btnDeleteRoms_click(self):
+        for item in self.getSelectedRoms():
+            self.deleteGame(item.game)
+
+    def getSelectedRadioBtn(self):
+        for radio in groupBox.findChildren(QRadioButton):
+            if radio.isChecked():
+                return radio
+
+    def getSelectedRoms(self):
+        out = []
+        for i in range(self.ui.lwFilteredRoms.count()):
+            item = self.ui.lwFilteredRoms.item(i)
+            if item.checkState() == Qt.Checked:
+                out.append(item)
+        return out
+
+    def deleteGame(self, game=None):
+        if game != None:
+            if game.pictures != []:
+                for file in game.pictures:
+                    os.remove(file)
+            if not game.video is None:
+                os.remove(game.video)
+            if not game.updatePath is None:
+                os.remove(game.updatePath)
+            if game.dlc != []:
+                for file in game.dlc:
+                    os.remove(file)
+            os.remove(game.romPath)
+            self.on_btnDeleteGamelistEntry_click(game.gamelistEntry)
+
 #################^ ROMS TAB ^##################
 ###############################################
-
 ################################################
 #################v MULTIMEDIA v#################
-    def displayImage(self, imagePath):
+    def displayImage(self, imagePath, label=None):
+        if label is None:
+            label = self.ui.lblImage
         self.videoWidget.hide()
         self.mediaPlayer.stop()
         pixmap = QPixmap(imagePath)
-        scaledPixmap = pixmap.scaled(self.ui.lblImage.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation)
-        self.ui.lblImage.setPixmap(scaledPixmap)
-        self.ui.lblImage.setAlignment(Qt.AlignCenter)
-        self.ui.lblImage.show()
+        scaledPixmap = pixmap.scaled(label.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        label.setPixmap(scaledPixmap)
+        label.setAlignment(Qt.AlignCenter)
+        label.show()
 
     def playVideo(self, videoPath):
         self.ui.lblImage.hide()
@@ -323,47 +390,53 @@ class MainWindow(QMainWindow):
         self.videoWidget.show()
         self.mediaPlayer.play()
 
-    # REMOVE ME AND CONTROL
-    def on_btnLoadMedia_click(self):
-        self.ui.lvMedia.clear()
-        folderPath = QFileDialog.getExistingDirectory(self, 'Select Media Folder', self.conMan.get('folders', 'mediafolder'))
-        self.mediaDic = Utils.loadMediaDic(folderPath)
-        self.mediaDic = dict(sorted(self.mediaDic.items()))
-        self.ui.lvMedia.addItems(self.mediaDic.keys())
-
     def loadThumbnails(self, game):
         self.clearGroupBox(self.ui.grpMedia)
+        i = 0
 
-        # load video thumbnail
-        thumb = Utils.get_video_thumbnail(game.video)
-        pixmap = QPixmap(thumb)
-        self.createThumbnail(game.video, pixmap)
+        # load video thumbnail first
+        if game.video:
+            thumb = Utils.get_video_thumbnail(game.video)
+            pixmap = QPixmap(thumb)
+            label = self.createThumbnail(game.video, pixmap)
+            row = i // 5  # There will be 2 rows
+            col = i % 5   # Each row will have 5 columns
+            self.ui.grpMedia.layout().addWidget(label, row, col)
+            i += 1
 
         # load image thumbnails
         for file in game.pictures:
             pixmap = QPixmap(file)
-            self.createThumbnail(file, pixmap)
+            label = self.createThumbnail(file, pixmap)
+            row = i // 5
+            col = i % 5
+            self.ui.grpMedia.layout().addWidget(label, row, col)
+            i += 1
+            if 'marquees' in file:
+                self.displayImage(file, self.ui.lblMarquee)
 
     def createThumbnail(self, file, pixmap):
         label = Thumbnail(file)
-        label.setFixedSize(64, 48)
+        label.setFixedSize(128, 96)
         scaledPixmap = pixmap.scaled(label.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation)
         label.setPixmap(scaledPixmap)
         label.setAlignment(Qt.AlignCenter)
         label.show()
         label.clicked.connect(self.on_thumbnail_clicked)
-        self.ui.grpMedia.layout().addWidget(label)
+        return label
 
     def on_thumbnail_clicked(self):
         selectedThumbnail = self.sender()
         if selectedThumbnail:
             if Path(selectedThumbnail.path).suffix in self.videoExtensions:
                 self.playVideo(selectedThumbnail.path)
+                self.ui.lblMedia.setText('Video')
             else:
                 self.displayImage(selectedThumbnail.path)
-#################^ MULTIMEDIA ^#################
-################################################
-
+                mediaType = os.path.basename(os.path.dirname(selectedThumbnail.path)).rstrip('s').title()
+                if mediaType == '3Dboxe':
+                    mediaType = '3D Box'
+                self.ui.lblMedia.setText(mediaType)
 
     def clearGroupBox(self, group):
         layout = group.layout()
@@ -374,6 +447,10 @@ class MainWindow(QMainWindow):
                 if widget is not None:
                     widget.deleteLater()  # Safely delete the widget from memory
             layout.invalidate()  # Update the layout
+#################^ MULTIMEDIA ^#################
+################################################
+
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)  # Create the application

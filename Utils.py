@@ -1,13 +1,15 @@
-import sys, os, fnmatch, configparser, cv2
+import sys, os, fnmatch, configparser, cv2, pickle
 from pathlib import Path
 import xml.etree.ElementTree as ET
-from PyQt5.QtWidgets import QMessageBox, QApplication, QLabel
+from PyQt5.QtWidgets import QMessageBox, QApplication, QLabel, QListWidgetItem
 from PyQt5.QtCore import Qt, QAbstractItemModel, QModelIndex, pyqtSignal, QObject
 from PyQt5.QtGui import QPixmap, QPainter, QIcon
 
 class Utils:
     ignoreList = ['metadata', 'metadata.txt', 'systeminfo', 'systeminfo.txt', 'cloud', 'cloud.conf']
     ignoredromdirs = ['model2','xbox360']
+    programFolder = os.path.dirname(os.path.abspath(__file__))
+
     def __init__(self):
         pass
 
@@ -74,7 +76,7 @@ class Utils:
         filePaths = []
 
         # Iterate over files in the specified directory
-        for fileName in Utils.getFilesInSubDirs(directory):
+        for fileName in Utils.getFilesInDir(directory):
             if Path(fileName).stem not in Utils.ignoreList:
                 filePaths.append(fileName)
 
@@ -142,6 +144,22 @@ class Utils:
             cv2.imwrite(thumbnail_path, image)  # Save the frame as an image
             return thumbnail_path
         return None
+
+    @staticmethod
+    def serializeGames(games):
+        # Serialize (Save) the list of games to a file
+        path = os.path.join(Utils.programFolder, 'games.pkl')
+        with open(path, 'wb') as f:
+            pickle.dump(games, f)
+
+    @staticmethod
+    def deserializeGames():
+        # Deserialize (Load) the list of games from the file
+        out = None
+        path = os.path.join(Utils.programFolder, 'games.pkl')
+        with open(path, 'rb') as f:
+            out = pickle.load(f)
+        return out
 
 class FileSystemModel(QAbstractItemModel):
     def __init__(self, rootPath):
@@ -239,19 +257,26 @@ class Game():
         self.dlc = [] # paths to any DLC files
         self.gamelistEntry = None # a <game> element from xmlRoot
 
+    def removeTag(tag):
+        self.name = re.sub(r'\s*[\[\(]{tag}?[\]\)]', '', tag)
+
     def __repr__(self):
         return (f"Game(name={self.name}, romPath={self.romPath}, system={self.system}, "
             f"mediaFolder={self.mediaFolder}, pictures={self.pictures}, video={self.video}, "
             f"updatePath={self.updatePath}, dlc={self.dlc}, gamelistEntry={self.gamelistEntry})")
 
-########################################################
-#def loadAllMedia():
-#    # get media
-#    for game in self.games.values():
-#        media = Utils.loadMediaDic(game.mediaFolder)
-#        for entry in media.get(game.name):
-#            folder = os.path.basename(os.path.dirname(entry))
-#            if Path(entry).suffix == '.mp4':
-#                game.video = entry
-#            else:
-#                game.pictures.append(entry)
+class QListWidgetGame(QListWidgetItem):
+    def __init__(self, text='', game=None):
+        super().__init__(text)
+        self.game = game
+
+    def setGame(self, var):
+        self.game = var
+
+    def getGame(self):
+        return self.game
+
+    def __repr__(self):
+        return (f"Text={self.text()}, Game(name={self.game.name}, romPath={self.game.romPath}, system={self.game.system}, "
+            f"mediaFolder={self.game.mediaFolder}, pictures={self.game.pictures}, video={self.game.video}, "
+            f"updatePath={self.game.updatePath}, dlc={self.game.dlc}, gamelistEntry={self.game.gamelistEntry})")

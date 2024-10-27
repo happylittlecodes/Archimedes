@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1228</width>
-    <height>900</height>
+    <width>1565</width>
+    <height>785</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,37 +16,27 @@
   <widget class="QTabWidget" name="tcTabs">
    <property name="geometry">
     <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>1221</width>
-     <height>780</height>
+     <x>370</x>
+     <y>10</y>
+     <width>1191</width>
+     <height>761</height>
     </rect>
    </property>
    <property name="tabShape">
     <enum>QTabWidget::Rounded</enum>
    </property>
    <property name="currentIndex">
-    <number>0</number>
+    <number>2</number>
    </property>
    <widget class="QWidget" name="tabGames">
     <attribute name="title">
-     <string>Games</string>
+     <string>Metadata &amp;&amp; Media</string>
     </attribute>
-    <widget class="QListWidget" name="lwGames">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>50</y>
-       <width>351</width>
-       <height>201</height>
-      </rect>
-     </property>
-    </widget>
     <widget class="QLabel" name="label_9">
      <property name="geometry">
       <rect>
-       <x>770</x>
-       <y>280</y>
+       <x>741</x>
+       <y>271</y>
        <width>85</width>
        <height>21</height>
       </rect>
@@ -58,10 +48,10 @@
     <widget class="QPlainTextEdit" name="txtDesc">
      <property name="geometry">
       <rect>
-       <x>869</x>
-       <y>279</y>
+       <x>840</x>
+       <y>270</y>
        <width>341</width>
-       <height>411</height>
+       <height>400</height>
       </rect>
      </property>
      <property name="acceptDrops">
@@ -74,8 +64,8 @@
     <widget class="QPushButton" name="btnAddGame">
      <property name="geometry">
       <rect>
-       <x>989</x>
-       <y>699</y>
+       <x>960</x>
+       <y>680</y>
        <width>111</width>
        <height>29</height>
       </rect>
@@ -87,8 +77,8 @@
     <widget class="QPushButton" name="btnSaveChanges">
      <property name="geometry">
       <rect>
-       <x>869</x>
-       <y>699</y>
+       <x>840</x>
+       <y>680</y>
        <width>121</width>
        <height>29</height>
       </rect>
@@ -100,8 +90,8 @@
     <widget class="QWidget" name="layoutWidget">
      <property name="geometry">
       <rect>
-       <x>768</x>
-       <y>10</y>
+       <x>739</x>
+       <y>1</y>
        <width>441</width>
        <height>268</height>
       </rect>
@@ -192,8 +182,8 @@
     <widget class="QPushButton" name="btnDeleteGamelistEntry">
      <property name="geometry">
       <rect>
-       <x>1099</x>
-       <y>699</y>
+       <x>1070</x>
+       <y>680</y>
        <width>111</width>
        <height>29</height>
       </rect>
@@ -202,39 +192,13 @@
       <string>Delete Entry</string>
      </property>
     </widget>
-    <widget class="QComboBox" name="cmbSystems">
-     <property name="geometry">
-      <rect>
-       <x>130</x>
-       <y>10</y>
-       <width>231</width>
-       <height>29</height>
-      </rect>
-     </property>
-     <property name="currentText">
-      <string extracomment="System..."/>
-     </property>
-    </widget>
-    <widget class="QLabel" name="label">
-     <property name="geometry">
-      <rect>
-       <x>40</x>
-       <y>10</y>
-       <width>67</width>
-       <height>31</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>System:</string>
-     </property>
-    </widget>
     <widget class="QLabel" name="lblImage">
      <property name="geometry">
       <rect>
-       <x>209</x>
-       <y>300</y>
-       <width>650</width>
-       <height>430</height>
+       <x>20</x>
+       <y>310</y>
+       <width>670</width>
+       <height>370</height>
       </rect>
      </property>
      <property name="text">
@@ -245,13 +209,26 @@
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>250</y>
-       <width>181</width>
-       <height>491</height>
+       <y>10</y>
+       <width>701</width>
+       <height>291</height>
       </rect>
      </property>
      <property name="title">
       <string>grpMedia</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lblMedia">
+     <property name="geometry">
+      <rect>
+       <x>310</x>
+       <y>690</y>
+       <width>501</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>lblMedia</string>
      </property>
     </widget>
    </widget>
@@ -259,36 +236,13 @@
     <attribute name="title">
      <string>Rom Manager</string>
     </attribute>
-    <widget class="QPushButton" name="btnLoadRomDir">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>10</y>
-       <width>131</width>
-       <height>29</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>&amp;Load Directory</string>
-     </property>
-    </widget>
-    <widget class="QListWidget" name="lstRoms">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>50</y>
-       <width>361</width>
-       <height>691</height>
-      </rect>
-     </property>
-    </widget>
     <widget class="QGroupBox" name="grpRadioBtns">
      <property name="geometry">
       <rect>
-       <x>380</x>
-       <y>10</y>
-       <width>121</width>
-       <height>731</height>
+       <x>10</x>
+       <y>0</y>
+       <width>221</width>
+       <height>721</height>
       </rect>
      </property>
      <property name="layoutDirection">
@@ -298,98 +252,167 @@
       <string>Filters:</string>
      </property>
     </widget>
-    <widget class="QListWidget" name="lstFilteredRoms">
+    <widget class="QListWidget" name="lwFilteredRoms">
      <property name="geometry">
       <rect>
-       <x>680</x>
-       <y>50</y>
+       <x>250</x>
+       <y>37</y>
        <width>381</width>
-       <height>221</height>
+       <height>311</height>
       </rect>
      </property>
     </widget>
     <widget class="QPushButton" name="btnDeleteRoms">
      <property name="geometry">
       <rect>
-       <x>680</x>
-       <y>290</y>
-       <width>121</width>
-       <height>29</height>
+       <x>250</x>
+       <y>360</y>
+       <width>131</width>
+       <height>61</height>
       </rect>
      </property>
      <property name="text">
-      <string>Delete Selected</string>
+      <string>Delete Selected
+Tag</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="btnRemoveRomTags">
+    <widget class="QPushButton" name="btnRemoveAllTags">
      <property name="geometry">
       <rect>
-       <x>810</x>
-       <y>290</y>
-       <width>121</width>
-       <height>29</height>
+       <x>394</x>
+       <y>360</y>
+       <width>91</width>
+       <height>61</height>
       </rect>
      </property>
      <property name="text">
-      <string>Remove All Tags</string>
+      <string>Remove
+All Tags</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btnDeleteRoms_2">
+     <property name="geometry">
+      <rect>
+       <x>498</x>
+       <y>360</y>
+       <width>131</width>
+       <height>61</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Delete Selected
+ROMS</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="chkAll">
+     <property name="geometry">
+      <rect>
+       <x>250</x>
+       <y>10</y>
+       <width>121</width>
+       <height>27</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Select All</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lblMarquee">
+     <property name="geometry">
+      <rect>
+       <x>250</x>
+       <y>440</y>
+       <width>381</width>
+       <height>271</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>lblMarquee</string>
      </property>
     </widget>
    </widget>
    <widget class="QWidget" name="tabMedia">
     <attribute name="title">
-     <string>Media</string>
+     <string>Config</string>
     </attribute>
-    <widget class="QPushButton" name="btnLoadMedia">
+    <widget class="QPushButton" name="btnGamelists">
      <property name="geometry">
       <rect>
-       <x>10</x>
-       <y>10</y>
-       <width>151</width>
+       <x>310</x>
+       <y>20</y>
+       <width>131</width>
        <height>61</height>
       </rect>
      </property>
      <property name="text">
-      <string>Load Game System
- Media Folder</string>
+      <string>Update
+Gamelist Path</string>
      </property>
     </widget>
-    <widget class="QListWidget" name="lvMedia">
+    <widget class="QPushButton" name="btnSerialize">
      <property name="geometry">
       <rect>
-       <x>10</x>
-       <y>80</y>
-       <width>341</width>
-       <height>411</height>
+       <x>30</x>
+       <y>20</y>
+       <width>131</width>
+       <height>61</height>
       </rect>
+     </property>
+     <property name="text">
+      <string>Serialize Game
+Objects</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btnDeserialize">
+     <property name="geometry">
+      <rect>
+       <x>170</x>
+       <y>20</y>
+       <width>131</width>
+       <height>61</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Deserialize
+Game Objects</string>
      </property>
     </widget>
    </widget>
   </widget>
-  <widget class="QPushButton" name="btnTemp">
-   <property name="geometry">
-    <rect>
-     <x>20</x>
-     <y>810</y>
-     <width>91</width>
-     <height>29</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>test</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="btnGamelists">
+  <widget class="QListWidget" name="lwGames">
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>848</y>
-     <width>141</width>
-     <height>41</height>
+     <y>50</y>
+     <width>351</width>
+     <height>721</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>10</y>
+     <width>67</width>
+     <height>31</height>
     </rect>
    </property>
    <property name="text">
-    <string>Update
-Gamelist Path</string>
+    <string>System:</string>
+   </property>
+  </widget>
+  <widget class="QComboBox" name="cmbSystems">
+   <property name="geometry">
+    <rect>
+     <x>90</x>
+     <y>10</y>
+     <width>271</width>
+     <height>29</height>
+    </rect>
+   </property>
+   <property name="currentText">
+    <string extracomment="System..."/>
    </property>
   </widget>
  </widget>
